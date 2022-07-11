@@ -6,7 +6,7 @@ import CssDevTool from '../components/CssDevTool';
 
 const App: Component = () => {
   const [css, setCss] = createSignal({
-    'header-main': {
+    'element-style': {
       color: 'red',
       'font-size': '20px'
     },
@@ -20,8 +20,15 @@ const App: Component = () => {
   })
   return (
     <div class={styles.App}>
-      <div style={{"width": "400px", margin: '0 auto'}}>
-        <CssDevTool css={css()} setCss={setCss} />
+      <div style={{'display': 'flex'}}>
+      <div style={{width: '50%'}}>
+        <div style={css()['element-style']}></div>
+      </div>
+      <div style={{width: '50%'}}>
+        <div style={{"width": "400px", margin: '0 auto',}}>
+          <CssDevTool css={css()} setCss={setCss} />
+        </div>
+      </div>
       </div>
     </div>
   );
