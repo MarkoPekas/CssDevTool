@@ -7,7 +7,9 @@ import CssDevTool from '../components/CssDevTool';
 const App: Component = () => {
   const [css, setCss] = createSignal({
     'element-style': {
-      color: 'red',
+      width: '100px',
+      height: '100px',
+      'background-color': 'red',
       'font-size': '20px'
     },
     'body': {
