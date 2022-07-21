@@ -21,7 +21,6 @@ const CssDevTool = (props: {css: CssClasses, setCss: (value: CssClasses) => void
     const cssKeys = Object.keys(css());
 
     createEffect(() => {
-        console.log(filteredCss())
         let newCss: CssClasses = {}
         Object.keys(css()).forEach(key => {
             if (css()[key] !== undefined) {
@@ -39,16 +38,25 @@ const CssDevTool = (props: {css: CssClasses, setCss: (value: CssClasses) => void
         
         props.setCss(newCss)
     })
+    const newline = (key: string, id: string) => {
+        setCss({
+            ...css(),
+            [key]: {
+                ...css()[key],
+                ['']: ''
+            }
+        })
+        document.getElementById(id)?.focus()
+    }
     return (
-        <div style={{width: '100%', "font-size": '14px', "text-align": 'left', "border-radius": '6px', "box-shadow": '0 15px 20px -5px rgba(0, 0, 0, 0.1)', color: '#7a8080', "margin-top": '16px'}}>
-            <div style={{padding: '4px', display: 'flex', "justify-content": 'flex-end'}}>
-                <p style={{"margin-right": '4px'}}>filter:</p>
-                <input onChange={(e) => setFilter(e.currentTarget.value)} style={{border: '1px solid #ccc', "border-radius": '4px'}} />
+        <div style={{width: '100%', "font-size": '14px', "text-align": 'left', "border-radius": '6px', "box-shadow": '0 15px 20px -5px rgba(0, 0, 0, 0.1)', color: '#fafafa', "margin-top": '16px', background: '#202124', "font-family": 'monospace'}}>
+            <div style={{padding: '4px', display: 'flex', "background-color": '#292a2d'}}>
+                <input placeholder='filter' onInput={(e) => setFilter(e.currentTarget.value)} style={{ padding: '2px 8px', background: '#202124'}} />
             </div>
             {cssKeys.map((key: string, i: number) => {
                 return (
                     <div style={{padding: '16px', "border-top": '1px solid #ccc'}}>
-                        {key} {'{'}
+                        <p style={{'color': '#7a8080'}}>{key} <span style={{color: '#fafafa'}}>{'{'}</span></p>
                         <div>
                             {
                                 Object.keys(css()[key]).map((k: string, j: number) => {
@@ -56,7 +64,7 @@ const CssDevTool = (props: {css: CssClasses, setCss: (value: CssClasses) => void
                                         <div style={{
                                             display: (filter() === '' || k.includes(filter())) ? 'flex' : 'none',
                                             }}>
-                                        <PropertyLine key={`${i}-${j}`} name={k} value={css()[key][k]}
+                                        <PropertyLine newline={(str) => newline(key, str)} key={`${i}-${j}`} name={k} value={css()[key][k]}
                                         setProperty={(propName: string) => {
                                             let classKeys = Object.keys(css()[key]);
                                             let newCss: Record<string, string> = {}
@@ -100,13 +108,7 @@ const CssDevTool = (props: {css: CssClasses, setCss: (value: CssClasses) => void
                             }
                         </div>
                         <div style={{width: '100%'}} onClick={() => {
-                            setCss({
-                                ...css(),
-                                [key]: {
-                                    ...css()[key],
-                                    ['']: ''
-                                }
-                            })
+                            newline(key, 'idk')
                         }}>{'}'}</div>
                     </div>
                 )   
@@ -138,7 +140,7 @@ const expandableProperties: Record<string, string[]> = {
     ]
 }
 
-const PropertyLine = (props: {name: string, value: string, setChecked: (val: boolean) => void, setValue: (value: string) => void, setProperty: (value: string) => void, key: string}) => {
+const PropertyLine = (props: {name: string, value: string, setChecked: (val: boolean) => void, setValue: (value: string) => void, setProperty: (value: string) => void, key: string, newline: (id: string) => void}) => {
     const [checked, setChecked] = createSignal(true);
     const [expanded, setExpanded] = createSignal(false);
     const random = Math.random()
@@ -149,15 +151,16 @@ const PropertyLine = (props: {name: string, value: string, setChecked: (val: boo
     return (
         <div>
             <div style={{display: 'flex', "align-items": 'center'}}>
-                <input type='checkbox' checked onChange={(e) => {
+                <input type='checkbox' checked tabIndex={-1} onChange={(e) => {
                     setChecked(!checked())
                     props.setChecked(checked())
-                    }} />
-                <span style={{color: '#c586c0'}}><Input key={props.key} value={props.name} checked={checked()} onChange={props.setProperty} suggestions={cssStyles} val/></span>:
+                    }} 
+                    style={{display: props.name === '' ? 'none' : 'block', background: '#292a2d'}} />
+                <span style={{color: '#2bd4a8'}}><Input newline={props.newline} key={props.key} value={props.name} checked={checked()} onChange={props.setProperty} suggestions={cssStyles} val/></span>:
                 {props.name.includes('color') && 
-                <div style={{width: '10px', height: '10px', "margin-left": '6px', "background-color": props.value}}></div>
+                <div style={{width: '10px', height: '10px', "margin-left": '6px', "background-color": props.value, 'margin-top': '1px'}}></div>
                 }
-                <Input key={props.key} value={props.value} checked={checked()} onChange={props.setValue} suggestions={(SuggestionJSON[props.name] || {values: []}).values} val={false}/>;
+                <Input newline={props.newline} key={props.key} value={props.value} checked={checked()} onChange={props.setValue} suggestions={(SuggestionJSON[props.name] || {values: []}).values} val={false}/>;
 
 
                 <div onClick={() => setExpanded(!expanded())}

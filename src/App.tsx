@@ -17,9 +17,6 @@ const App: Component = () => {
       'font-size': '30px'
     } 
   });
-  createEffect(() => {
-    console.log(css())
-  })
   return (
     <div class={styles.App}>
       <div style={{'display': 'flex'}}>

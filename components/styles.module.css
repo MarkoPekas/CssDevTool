@@ -1,12 +1,12 @@
 .item {
-    color: #333;
+    color: #fafafa;
     font-size: 14px;
-    padding: 8px 16px;
+    padding: 0px 8px;
     width: 100%;
     cursor: pointer;
-    background-color: #fff;
+    background-color: #292a2d;
 }
 
 .item:hover {
-    background-color: #f5f5f5;
+    background-color: #35363a;
 }
